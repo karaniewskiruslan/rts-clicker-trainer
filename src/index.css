@@ -1,0 +1,24 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+@import "tailwindcss";
+
+#root {
+  min-height: 100dvh;
+  background: radial-gradient(
+    circle,
+    #05023d 0%,
+    #090979 35%,
+    rgba(0, 212, 255, 1) 100%
+  );
+  font-family: "Inter", sans-serif;
+}
+
+@theme {
+  --color-black: #212427;
+  --color-lost-screen: #1515155c;
+  --color-green-200: oklch(0.925 0.084 155.995);
+}
+
+[data-game-table],
+[data-game-options] {
+  @apply rounded-3xl bg-orange-200;
+}
