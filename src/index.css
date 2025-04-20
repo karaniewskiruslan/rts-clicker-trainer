@@ -14,11 +14,18 @@
 
 @theme {
   --color-black: #212427;
-  --color-lost-screen: #1515155c;
-  --color-green-200: oklch(0.925 0.084 155.995);
+  --color-lose-screen: #1515155c;
+  --animate-number: number-time 0.2s ease-in-out;
+
+  @keyframes number-time {
+    0% {
+      transform: scale(1.1);
+    }
+  }
 }
 
 [data-game-table],
-[data-game-options] {
+[data-game-options],
+[data-options] {
   @apply rounded-3xl bg-orange-200;
 }

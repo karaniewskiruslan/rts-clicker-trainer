@@ -3,16 +3,30 @@ import { START_TIME } from "../constants/constants";
 
 type Table = {
   gameStarted: boolean;
-  gameLost: boolean;
+  gameLose: boolean;
+  gamePaused: boolean;
+  timerStopped: boolean;
   time: number;
   score: number;
+  difficulty: number;
 };
 
 const initialState: Table = {
   gameStarted: false,
-  gameLost: false,
+  gameLose: false,
+  timerStopped: false,
+  gamePaused: false,
   time: 0,
   score: 0,
+  difficulty: 1,
+};
+
+const applyStartGameState = (state: Table) => {
+  state.gameStarted = true;
+  state.gameLose = false;
+  state.timerStopped = false;
+  state.score = 0;
+  state.time = START_TIME;
 };
 
 const gameState = createSlice({
@@ -20,16 +34,25 @@ const gameState = createSlice({
   initialState,
   reducers: {
     startGame: (state) => {
-      state.gameStarted = true;
-      state.gameLost = false;
-      state.score = 0;
-      state.time = START_TIME;
+      applyStartGameState(state);
     },
     endGame: (state) => {
-      state.gameLost = true;
+      state.gameLose = true;
+      state.timerStopped = true;
     },
+    handlePause: (state) => {
+      state.gamePaused = !state.gamePaused;
+      state.timerStopped = !state.timerStopped;
+    },
+
     addTimer: (state) => {
       state.time += 10;
+    },
+    changeDifficulty: (state) => {
+      applyStartGameState(state);
+      state.gamePaused = true;
+      state.timerStopped = true;
+      state.difficulty = (state.difficulty + 1) % 3;
     },
     secondPass: (state) => {
       state.time--;
@@ -40,6 +63,13 @@ const gameState = createSlice({
   },
 });
 
-export const { startGame, endGame, scoreChange, addTimer, secondPass } =
-  gameState.actions;
+export const {
+  startGame,
+  endGame,
+  scoreChange,
+  addTimer,
+  secondPass,
+  handlePause,
+  changeDifficulty,
+} = gameState.actions;
 export default gameState.reducer;

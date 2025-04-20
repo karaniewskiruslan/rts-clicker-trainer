@@ -4,11 +4,11 @@ import TableRow from "./Table/TableRow";
 import { useAppContext } from "../../context/AppContext";
 
 const GameTable = () => {
-  const { onClickStartGame } = useAppContext();
+  const { handleClickStartGame } = useAppContext();
   const { table } = useAppSelector((state) => state.table);
 
   useEffect(() => {
-    onClickStartGame();
+    handleClickStartGame();
   }, []);
 
   return (

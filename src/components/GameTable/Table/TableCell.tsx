@@ -30,10 +30,10 @@ const cellEnterVariant: Variants = {
 };
 
 const TableCell = ({ content, colNum, rowNum }: Props) => {
-  const { onClickDeleteCell } = useAppContext();
+  const { handleClickDeleteCell } = useAppContext();
 
   const handleClickCell = () => {
-    onClickDeleteCell(content, rowNum, colNum);
+    handleClickDeleteCell(content, rowNum, colNum);
   };
 
   return (
