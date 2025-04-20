@@ -1,12 +1,12 @@
 {
   "name": "rts-clicker-trainer",
   "private": true,
-  "homepage": "https://gitname.github.io/rts-clicker-trainer",
+  "homepage": "https://karaniewskiruslan.github.io/rts-clicker-trainer",
   "version": "0.1.1",
   "type": "module",
   "scripts": {
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build",
+    "deploy": "gh-pages -d dist",
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
@@ -38,4 +38,3 @@
     "vite": "^6.3.1"
   }
 }
-
