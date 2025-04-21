@@ -1,11 +1,19 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, ReactNode, useContext, useEffect } from "react";
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { useAppDispatch } from "../hooks/useAppDispatch.hook";
 import {
   addTimer,
   changeDifficulty,
   endGame,
+  handleHowToPlay,
   handlePause,
+  loseText,
   scoreChange,
   secondPass,
   startGame,
@@ -23,10 +31,13 @@ type Props = {
 };
 
 type AppContextProps = {
+  addPoint: boolean;
   handleClickStartGame: () => void;
   handleClickDeleteCell: (content: "X" | "O", r: number, c: number) => void;
   handleClickPauseGame: () => void;
   handleClickChangeDifficulty: () => void;
+  addPointText: () => void;
+  handleClickHowToPlay: () => void;
 };
 
 const AppContext = createContext({} as AppContextProps);
@@ -43,9 +54,9 @@ export const useAppContext = () => {
 
 const AppContextContainer = ({ children }: Props) => {
   const dispatch = useAppDispatch();
-  const { time, score, timerStopped, gamePaused, difficulty } = useAppSelector(
-    (state) => state.gameState,
-  );
+  const [addPoint, setAddPoint] = useState(false);
+  const { time, score, timerStopped, gamePaused, difficulty, howToOpen } =
+    useAppSelector((state) => state.gameState);
 
   const handleClickStartGame = () => {
     dispatch(startGame());
@@ -68,11 +79,25 @@ const AppContextContainer = ({ children }: Props) => {
     }
 
     dispatch(endGame());
+    if (howToOpen) {
+      dispatch(handleHowToPlay());
+    }
+    dispatch(loseText("You clicked white cell!"));
     return;
   };
 
   const handleClickPauseGame = () => {
+    if (howToOpen) return;
+
     dispatch(handlePause());
+  };
+
+  const handleClickHowToPlay = () => {
+    if (gamePaused) {
+      dispatch(handlePause());
+    }
+
+    dispatch(handleHowToPlay());
   };
 
   const handleClickChangeDifficulty = () => {
@@ -97,6 +122,7 @@ const AppContextContainer = ({ children }: Props) => {
 
     if (score % diffPoints() === 0 && score !== 0) {
       dispatch(addTimer());
+      setAddPoint(true);
     }
   }, [dispatch, score, difficulty]);
 
@@ -105,21 +131,29 @@ const AppContextContainer = ({ children }: Props) => {
       if (time > 0 && !timerStopped) {
         dispatch(secondPass());
       }
-    }, 1000);
+    }, 100);
 
     if (time === 0) {
       dispatch(endGame());
+      dispatch(loseText("Time is out!"));
     }
     return () => clearInterval(timer);
   }, [dispatch, time, timerStopped]);
 
+  const addPointText = () => {
+    setAddPoint(false);
+  };
+
   return (
     <AppContext.Provider
       value={{
+        addPoint,
         handleClickStartGame,
         handleClickDeleteCell,
         handleClickPauseGame,
         handleClickChangeDifficulty,
+        addPointText,
+        handleClickHowToPlay,
       }}
     >
       {children}

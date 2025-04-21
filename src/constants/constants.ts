@@ -1,12 +1,10 @@
 import { Table } from "../types/table";
 
-export const INITIAL_TABLE: Table = [
-  ["O", "O", "O", "O", "O"],
-  ["O", "O", "O", "O", "O"],
-  ["O", "O", "O", "O", "O"],
-  ["O", "O", "O", "O", "O"],
-  ["O", "O", "O", "O", "O"],
-];
+const TABLE_SIZE = 5;
+
+export const INITIAL_TABLE: Table = new Array(TABLE_SIZE).fill(
+  new Array(TABLE_SIZE).fill("O"),
+);
 
 export const START_TIME = 10;
 

@@ -4,14 +4,18 @@ import resume from "/img/resume.svg";
 
 type Props = {
   isPaused: boolean;
+  isFaded: boolean;
   onClickPauseHandle: () => void;
 };
 
-const OptionPause = ({ isPaused, onClickPauseHandle }: Props) => {
+const OptionPause = ({ isPaused, onClickPauseHandle, isFaded }: Props) => {
   return (
     <>
       <button
-        className="size-8 cursor-pointer rounded-full border"
+        className={classNames("size-8 rounded-full border duration-150", {
+          "cursor-not-allowed opacity-50": isFaded,
+          "cursor-pointer": !isFaded,
+        })}
         onClick={onClickPauseHandle}
       >
         <img

@@ -26,6 +26,11 @@
 
 [data-game-table],
 [data-game-options],
-[data-options] {
+[data-options],
+[data-how-to-play] {
   @apply rounded-3xl bg-orange-200;
+}
+
+[data-how-to-play-paragraph]:not(:last-child) {
+  @apply mb-2 text-sm;
 }

@@ -1,5 +1,6 @@
 import { useAppSelector } from "../../hooks/useAppSelector.hook";
-import HeadPanelInfo from "./HeadPanelInfo";
+import HeadPanelScore from "./HeadPanelScore";
+import HeadPanelTime from "./HeadPanelTime";
 
 const HeadPanel = () => {
   const { score, time } = useAppSelector((state) => state.gameState);
@@ -9,9 +10,9 @@ const HeadPanel = () => {
       data-game-options
       className="flex items-center justify-center gap-12 px-8 py-4"
     >
-      <HeadPanelInfo title="Score" info={score} />
+      <HeadPanelScore title="Score" score={score} />
       <h1 className="text-7xl font-bold">Click trainer</h1>
-      <HeadPanelInfo title="Time" info={time} />
+      <HeadPanelTime title="Time" time={time} />
     </div>
   );
 };

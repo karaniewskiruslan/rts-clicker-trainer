@@ -1,7 +1,9 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { START_TIME } from "../constants/constants";
 
 type Table = {
+  loseText: string;
+  howToOpen: boolean;
   gameStarted: boolean;
   gameLose: boolean;
   gamePaused: boolean;
@@ -13,6 +15,8 @@ type Table = {
 
 const initialState: Table = {
   gameStarted: false,
+  howToOpen: false,
+  loseText: "Good luck to you!",
   gameLose: false,
   timerStopped: false,
   gamePaused: false,
@@ -44,7 +48,9 @@ const gameState = createSlice({
       state.gamePaused = !state.gamePaused;
       state.timerStopped = !state.timerStopped;
     },
-
+    handleHowToPlay: (state) => {
+      state.howToOpen = !state.howToOpen;
+    },
     addTimer: (state) => {
       state.time += 10;
     },
@@ -55,10 +61,13 @@ const gameState = createSlice({
       state.difficulty = (state.difficulty + 1) % 3;
     },
     secondPass: (state) => {
-      state.time--;
+      state.time = Math.round((state.time - 0.1) * 10) / 10;
     },
     scoreChange: (state) => {
       state.score++;
+    },
+    loseText: (state, action: PayloadAction<string>) => {
+      state.loseText = action.payload;
     },
   },
 });
@@ -71,5 +80,7 @@ export const {
   secondPass,
   handlePause,
   changeDifficulty,
+  loseText,
+  handleHowToPlay,
 } = gameState.actions;
 export default gameState.reducer;

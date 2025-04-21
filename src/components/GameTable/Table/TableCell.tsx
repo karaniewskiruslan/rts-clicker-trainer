@@ -1,5 +1,6 @@
 import { useAppContext } from "../../../context/AppContext";
 import { AnimatePresence, motion, Variants } from "framer-motion";
+// import { useAppSelector } from "../../../hooks/useAppSelector.hook";
 
 type Props = {
   content: "X" | "O";
@@ -31,6 +32,7 @@ const cellEnterVariant: Variants = {
 
 const TableCell = ({ content, colNum, rowNum }: Props) => {
   const { handleClickDeleteCell } = useAppContext();
+  // const { gamePaused, gameLose } = useAppSelector((state) => state.gameState);
 
   const handleClickCell = () => {
     handleClickDeleteCell(content, rowNum, colNum);
