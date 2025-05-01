@@ -1,6 +1,7 @@
 import classNames from "classnames";
 import pause from "/img/pause.svg";
 import resume from "/img/resume.svg";
+import { motion } from "framer-motion";
 
 type Props = {
   isPaused: boolean;
@@ -25,14 +26,19 @@ const OptionPause = ({ isPaused, onClickPauseHandle, isFaded }: Props) => {
         />
       </button>
       <text className="pointer-events-none absolute -left-[10rem] w-fit overflow-hidden">
-        <p
-          className={classNames(
-            "ease-in-outs text-2xl font-bold text-nowrap transition-transform duration-300",
-            { "translate-x-full": !isPaused },
-          )}
+        <motion.p
+          transition={{
+            type: "spring",
+            stiffness: 500,
+            damping: 20,
+            duration: 0.25,
+          }}
+          initial={{ x: 0 }}
+          animate={{ x: isPaused ? 0 : "125%" }}
+          className="text-2xl font-bold text-nowrap"
         >
           Game Paused
-        </p>
+        </motion.p>
       </text>
     </>
   );

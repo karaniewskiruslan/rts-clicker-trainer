@@ -1,6 +1,7 @@
 import { useAppContext } from "../../../context/AppContext";
 import { AnimatePresence, motion, Variants } from "framer-motion";
-// import { useAppSelector } from "../../../hooks/useAppSelector.hook";
+import { useAppSelector } from "../../../hooks/useAppSelector.hook";
+import classNames from "classnames";
 
 type Props = {
   content: "X" | "O";
@@ -32,7 +33,9 @@ const cellEnterVariant: Variants = {
 
 const TableCell = ({ content, colNum, rowNum }: Props) => {
   const { handleClickDeleteCell } = useAppContext();
-  // const { gamePaused, gameLose } = useAppSelector((state) => state.gameState);
+  const { gamePaused, timerStopped, bonusActive } = useAppSelector(
+    (state) => state.gameState,
+  );
 
   const handleClickCell = () => {
     handleClickDeleteCell(content, rowNum, colNum);
@@ -53,15 +56,23 @@ const TableCell = ({ content, colNum, rowNum }: Props) => {
             className="size-full bg-black"
           ></motion.div>
         ) : (
-          <motion.div
-            initial="initial"
-            animate="animate"
-            variants={cellEnterVariant}
-            transition={{ duration: 0.3 }}
-            className="grid size-full place-items-center bg-green-400 text-2xl select-none"
-          >
-            +1
-          </motion.div>
+          (!gamePaused || !timerStopped) && (
+            <motion.div
+              initial="initial"
+              animate="animate"
+              variants={cellEnterVariant}
+              transition={{ duration: 0.3 }}
+              className={classNames(
+                "grid size-full place-items-center bg-green-400 select-none",
+                {
+                  "text-3xl text-red-500": bonusActive,
+                  "text-2xl": !bonusActive,
+                },
+              )}
+            >
+              {bonusActive ? "+2" : "+1"}
+            </motion.div>
+          )
         )}
       </AnimatePresence>
     </div>

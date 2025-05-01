@@ -19,8 +19,6 @@ const NumberStroke = ({ position, numberSize }: Props) => {
     fontSize: numberSize * 4,
   };
 
-  console.log(numbers);
-
   return (
     <article style={containerStyle} className="overflow-hidden">
       <motion.ul

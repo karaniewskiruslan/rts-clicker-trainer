@@ -1,6 +1,5 @@
 import { motion } from "framer-motion";
 import { useAppContext } from "../context/AppContext";
-import { useKeydown } from "../hooks/useKeydown.hook";
 import { useAppSelector } from "../hooks/useAppSelector.hook";
 
 const loseScreenVariants = {
@@ -10,12 +9,12 @@ const loseScreenVariants = {
 };
 
 const LoseScreen = () => {
-  const { gameLose, score, loseText } = useAppSelector(
+  const { score, loseText } = useAppSelector(
     (state) => state.gameState,
   );
   const { handleClickStartGame } = useAppContext();
 
-  useKeydown("R", handleClickStartGame, gameLose);
+  
 
   return (
     <motion.section

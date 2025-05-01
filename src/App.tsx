@@ -5,6 +5,7 @@ import HeadPanel from "./components/HeadPanel/HeadPanel";
 import Options from "./components/Options/Options";
 import { useAppSelector } from "./hooks/useAppSelector.hook";
 import LoseScreen from "./components/LoseScreen";
+import ClickStreak from "./components/GameTable/ClickStreak/ClickStreak";
 
 const App = () => {
   const { gameLose } = useAppSelector((state) => state.gameState);
@@ -13,6 +14,7 @@ const App = () => {
     <main className="flex min-h-dvh flex-col items-center justify-center gap-4">
       <HeadPanel />
       <GameTable />
+      <ClickStreak />
       <AnimatePresence>{gameLose && <LoseScreen />}</AnimatePresence>
       <Footer />
       <Options />

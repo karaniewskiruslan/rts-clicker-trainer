@@ -9,7 +9,8 @@ const Footer = () => {
           className="duration-150 hover:text-sky-300"
         >
           Rusłan Karaniewski
-        </a>
+        </a>{" "}
+        - v0.1.3
       </p>
     </footer>
   );

@@ -27,10 +27,20 @@
 [data-game-table],
 [data-game-options],
 [data-options],
-[data-how-to-play] {
+[data-how-to-play],
+[data-leaderboard],
+[data-click-streak] {
   @apply rounded-3xl bg-orange-200;
 }
 
+[data-how-to-play-paragraph] {
+  @apply text-sm;
+}
+
 [data-how-to-play-paragraph]:not(:last-child) {
-  @apply mb-2 text-sm;
+  @apply mb-2;
+}
+
+h2 {
+  @apply text-3xl font-bold;
 }

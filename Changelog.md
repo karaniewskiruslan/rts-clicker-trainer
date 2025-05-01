@@ -19,3 +19,13 @@
 ● Added tutorial with explanation how game work and hot keys on it.
 
 ● When tutorial is open, game is paused and you cannot unpause it until you close tutorial.
+
+# v0.1.3
+
+● Difficulty level is now saved even when page was reloaded. You can open it on L button click.
+
+● Leaderboard added, where you can see your best 5 scores and difficulties on past run.
+
+● A click streak bonus was added. After clicking cells in a row, you gain a short bonus for the next few seconds, during which you earn 2 points for each clicked cell.
+
+● Few state bugs fixes, so game work more properly.

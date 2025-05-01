@@ -1,36 +1,47 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-refresh/only-export-components */
 import {
   createContext,
   ReactNode,
+  useCallback,
   useContext,
   useEffect,
   useState,
 } from "react";
 import { useAppDispatch } from "../hooks/useAppDispatch.hook";
 import {
+  addClickStrike,
   addTimer,
+  changeBonusState,
   changeDifficulty,
   endGame,
   handleHowToPlay,
+  handleLeaderboard,
   handlePause,
   loseText,
   scoreChange,
   secondPass,
   startGame,
+  subtractClickStrike,
 } from "../slices/gameState.slice";
 import { resetTable, deleteCell, setNewCell } from "../slices/gameTable.slice";
 import { useAppSelector } from "../hooks/useAppSelector.hook";
+import { v4 as uuid } from "uuid";
 import {
   ADD_TIMER_SCORE_EASY,
   ADD_TIMER_SCORE_HARD,
   ADD_TIMER_SCORE_NORMAL,
 } from "../constants/constants";
+import { useKeydown } from "../hooks/useKeydown.hook";
+import useLocalStorage from "../hooks/useLocalStorage.hook";
+import { Leaderboard } from "../types/leaderboard";
 
 type Props = {
   children: ReactNode;
 };
 
 type AppContextProps = {
+  leaderboard: Leaderboard[];
   addPoint: boolean;
   handleClickStartGame: () => void;
   handleClickDeleteCell: (content: "X" | "O", r: number, c: number) => void;
@@ -38,6 +49,7 @@ type AppContextProps = {
   handleClickChangeDifficulty: () => void;
   addPointText: () => void;
   handleClickHowToPlay: () => void;
+  handleClickLeaderboard: () => void;
 };
 
 const AppContext = createContext({} as AppContextProps);
@@ -45,7 +57,7 @@ const AppContext = createContext({} as AppContextProps);
 export const useAppContext = () => {
   const context = useContext(AppContext);
 
-  if (context === undefined) {
+  if (!context) {
     throw new Error("Context must be used within an AppContextContainer");
   }
 
@@ -55,15 +67,52 @@ export const useAppContext = () => {
 const AppContextContainer = ({ children }: Props) => {
   const dispatch = useAppDispatch();
   const [addPoint, setAddPoint] = useState(false);
-  const { time, score, timerStopped, gamePaused, difficulty, howToOpen } =
-    useAppSelector((state) => state.gameState);
+  const {
+    score,
+    gamePaused,
+    difficulty,
+    howToOpen,
+    gameLose,
+    bonusActive,
+    time,
+    timerStopped,
+    clickStrike,
+  } = useAppSelector((state) => state.gameState);
+  const [leaderboard, setLeaderboard] = useLocalStorage<Leaderboard[]>(
+    "leaderboard",
+    [],
+  );
+
+  const gameEnded = useCallback(
+    (text: string) => {
+      dispatch(endGame());
+      dispatch(loseText(text));
+      if (howToOpen) {
+        dispatch(handleHowToPlay());
+      }
+      setLeaderboard((prev) => [
+        ...prev,
+        {
+          date: new Date(),
+          score,
+          difficulty,
+          id: uuid(),
+        },
+      ]);
+    },
+    [difficulty, dispatch, howToOpen, leaderboard, score, setLeaderboard],
+  );
+
+  const spawnInitialCells = () => {
+    for (let i = 0; i < 4; i++) {
+      dispatch(setNewCell());
+    }
+  };
 
   const handleClickStartGame = () => {
     dispatch(startGame());
     dispatch(resetTable());
-    for (let i = 0; i < 4; i++) {
-      dispatch(setNewCell());
-    }
+    spawnInitialCells();
   };
 
   const handleClickDeleteCell = (content: "X" | "O", r: number, c: number) => {
@@ -75,15 +124,13 @@ const AppContextContainer = ({ children }: Props) => {
       dispatch(setNewCell());
       dispatch(scoreChange());
       dispatch(deleteCell([r, c]));
+      if (!bonusActive) {
+        dispatch(addClickStrike());
+      }
       return;
     }
 
-    dispatch(endGame());
-    if (howToOpen) {
-      dispatch(handleHowToPlay());
-    }
-    dispatch(loseText("You clicked white cell!"));
-    return;
+    gameEnded("You clicked white cell!");
   };
 
   const handleClickPauseGame = () => {
@@ -93,20 +140,41 @@ const AppContextContainer = ({ children }: Props) => {
   };
 
   const handleClickHowToPlay = () => {
-    if (gamePaused) {
-      dispatch(handlePause());
-    }
-
     dispatch(handleHowToPlay());
   };
 
   const handleClickChangeDifficulty = () => {
     dispatch(changeDifficulty());
     dispatch(resetTable());
-    for (let i = 0; i < 4; i++) {
-      dispatch(setNewCell());
-    }
+    spawnInitialCells();
   };
+
+  const handleClickLeaderboard = () => {
+    dispatch(handleLeaderboard());
+  };
+
+  const addPointText = () => {
+    setAddPoint(false);
+  };
+
+  useEffect(() => {
+    handleClickStartGame();
+  }, []);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      if (timerStopped) return;
+      if (time > 0) {
+        dispatch(secondPass());
+      }
+    }, 100);
+
+    if (time === 0) {
+      gameEnded("Time is out!");
+    }
+
+    return () => clearInterval(timer);
+  }, [time, timerStopped, dispatch, gameEnded]);
 
   useEffect(() => {
     const diffPoints = () => {
@@ -127,26 +195,44 @@ const AppContextContainer = ({ children }: Props) => {
   }, [dispatch, score, difficulty]);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      if (time > 0 && !timerStopped) {
-        dispatch(secondPass());
-      }
-    }, 100);
-
-    if (time === 0) {
-      dispatch(endGame());
-      dispatch(loseText("Time is out!"));
+    if (leaderboard.length > 1000) {
+      setLeaderboard((prev) =>
+        prev.sort((a, b) => b.score - a.score).slice(0, 1000),
+      );
     }
-    return () => clearInterval(timer);
-  }, [dispatch, time, timerStopped]);
+  }, [leaderboard, setLeaderboard]);
 
-  const addPointText = () => {
-    setAddPoint(false);
-  };
+  useEffect(() => {
+    const timer = setInterval(() => {
+      if (gamePaused || gameLose || bonusActive) return;
+      dispatch(subtractClickStrike());
+    }, 75);
+
+    return () => clearInterval(timer);
+  }, [gameLose, gamePaused, bonusActive]);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      if (gamePaused || gameLose || !bonusActive) return;
+      dispatch(subtractClickStrike());
+
+      if (clickStrike <= 0) {
+        dispatch(changeBonusState(false));
+      }
+    }, 5);
+
+    return () => clearInterval(timer);
+  }, [gamePaused, gameLose, bonusActive, clickStrike]);
+
+  useKeydown("S", handleClickPauseGame, !gameLose);
+  useKeydown("H", handleClickHowToPlay, !gameLose);
+  useKeydown("R", handleClickStartGame, gameLose);
+  useKeydown("E", handleClickLeaderboard, !gameLose);
 
   return (
     <AppContext.Provider
       value={{
+        leaderboard,
         addPoint,
         handleClickStartGame,
         handleClickDeleteCell,
@@ -154,6 +240,7 @@ const AppContextContainer = ({ children }: Props) => {
         handleClickChangeDifficulty,
         addPointText,
         handleClickHowToPlay,
+        handleClickLeaderboard,
       }}
     >
       {children}

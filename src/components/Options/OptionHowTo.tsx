@@ -1,12 +1,14 @@
 import classNames from "classnames";
 import howTo from "/img/howTo.svg";
+import { useAppContext } from "../../context/AppContext";
 
 type Props = {
   isOpen: boolean;
-  onClickOpen: () => void;
 };
 
-const OptionsHowTo = ({ onClickOpen, isOpen }: Props) => {
+const OptionsHowTo = ({ isOpen }: Props) => {
+  const { handleClickHowToPlay } = useAppContext();
+
   return (
     <button
       className={classNames(
@@ -15,7 +17,7 @@ const OptionsHowTo = ({ onClickOpen, isOpen }: Props) => {
           "bg-orange-300": isOpen,
         },
       )}
-      onClick={onClickOpen}
+      onClick={handleClickHowToPlay}
     >
       <img src={howTo} alt="How to play" className="size-full" />
     </button>
